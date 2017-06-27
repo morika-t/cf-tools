@@ -34,8 +34,8 @@ ROUTE="$1"
 if [[ $ROUTE =~ ^(([^ .]+)\.)?([^ /:]+)(:([0-9]+))?(/([^ ]+))?$ ]]; then
     host=${BASH_REMATCH[2]}
     domain=${BASH_REMATCH[3]}
-    port=${BASH_REMATCH[5]}
-    path=${BASH_REMATCH[7]}
+    port=${BASH_REMATCH[5]:-0}
+    path=${BASH_REMATCH[6]}
 else
     echo "ERROR: Unable to parse the route $ROUTE" >&2
     exit 1
@@ -62,7 +62,7 @@ else
     )
 fi
 route_guid=$(
-    cf curl "/v2/routes?q=domain_guid:${domain_guid}&port:${port}&path:${path}&q=host:${host}" |
+    cf curl "/v2/routes?q=host:${host}&q=domain_guid:${domain_guid}&q=port:${port}&q=path:${path}" |
         jq -r '.resources[].metadata.guid'
 )
 
